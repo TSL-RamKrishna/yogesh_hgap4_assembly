@@ -1,0 +1,15 @@
+## Introdcution
+
+Sequel data assembly using HGAP4 protocol in smrtlink v4.0.0
+
+## Requirement
+
+1. ruby rake
+
+2. smrtlink v 4.0.0
+
+## Usage:
+
+rake -f rakefile                                # default projectdir is HGAP_analysis
+
+rake -f rakefile projectdir=Myprojectdirname

@@ -1,0 +1,19 @@
+ENV["projectdir"] ? @projectdir=ENV["projectdir"] : @projectdir = "HGAP_Analysis"
+
+directory "lib"
+
+file "lib/inputfiles.fofn" => ["lib"] do
+	sh "ls -l /tsl/data/reads/two_blades/pacbio_genome_sequencing_ppufv02/ppufv02/pacbio_ppufv02/raw/*subreads.bam | awk '{print $9}' > lib/inputfiles.fofn"
+end
+
+file "lib/subreads.xml" => ["lib/inputfiles.fofn"] do
+	sh "source smrtlink-4.0.0.190159; dataset create --type SubreadSet lib/subreads.xml lib/inputfiles.fofn"
+end
+
+
+task :run_hgap4 => ["lib/subreads.xml"] do
+	puts "Running HGAP4 using smrtlink v4.0.0"
+	sh "source smrtlink-4.0.0.190159; SLURM_MEM_PER_CPU=32G; pbsmrtpipe pipeline-id --entry eid_subread:lib/subreads.xml --preset-xml /tsl/software/testing/smrtlink/4.0.0.190159/x86_64/workflow_options_preset.xml --preset-xml hgap_options.xml -o #{@projectdir} pbsmrtpipe.pipelines.polished_falcon_fat"
+end
+
+task :default => [:run_hgap4]
